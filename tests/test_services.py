@@ -1,12 +1,14 @@
-import pytest
-import pandas as pd
-from io import BytesIO
 import json
+from io import BytesIO
+
+import pandas as pd
+import pytest
+
 from src.services import analyze_cashback, get_transactions_with_phones
 
 
 def test_analyze_cashback():
-    '''
+    """
     Тестирует функцию analyze_cashback, которая анализирует кэшбэк по транзакциям за указанный месяц и год.
 
     В процессе теста:
@@ -20,7 +22,7 @@ def test_analyze_cashback():
         "Еда": 75.0,
         "Транспорт": 100.0
     }
-    '''
+    """
     # Создаем mock данные в виде Excel файла в памяти
     data = BytesIO()
     df = pd.DataFrame(
@@ -43,7 +45,7 @@ def test_analyze_cashback():
 
 
 def test_get_transactions_with_phones():
-    '''
+    """
     Тестирует функцию get_transactions_with_phones, которая извлекает транзакции, содержащие номера телефонов, из описания операций.
 
     В процессе теста:
@@ -57,7 +59,7 @@ def test_get_transactions_with_phones():
         {"index": 0, "description": "Оплата телефона +7 901 234-56-78", "phone_numbers": ["+7 901 234-56-78"]},
         {"index": 2, "description": "Перевод с карты на карту 8 916 123-45-67", "phone_numbers": ["8 916 123-45-67"]},
     ]
-    '''
+    """
     # Создаем mock данные в виде Excel файла в памяти
     data = BytesIO()
     df = pd.DataFrame(
