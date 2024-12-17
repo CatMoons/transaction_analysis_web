@@ -1,14 +1,14 @@
+import json
+import logging
+import re
 from datetime import datetime
 from fileinput import filename
 from re import search
 
 import pandas as pd
-import re
-import json
-import logging
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def transactions_xlsx(filename: str) -> list:
     """
@@ -31,6 +31,7 @@ def transactions_xlsx(filename: str) -> list:
         logging.error(f"Файл {filename} не найден.")
         return []
 
+
 def web_search_xcl(transactions, input_search):
     """
     Проводит поиск по категориям, по всему Excel-файлу.
@@ -50,6 +51,7 @@ def web_search_xcl(transactions, input_search):
 
     logging.info(f"Поиск завершен. Найдено {len(list_result)} транзакций.")
     return json.dumps(list_result, ensure_ascii=False)
+
 
 def num_card_account(transactions, user_input):
     """
@@ -73,18 +75,15 @@ def num_card_account(transactions, user_input):
     logging.info(f"Начало подсчета суммы операций для карты {user_input}.")
     list_sum = []
     for transaction in transactions:
-        if transaction['Номер карты'] == user_input:
+        if transaction["Номер карты"] == user_input:
             logging.debug(f"Добавление суммы операции: {transaction.get('Сумма операции с округлением')}")
-            list_sum.append(transaction.get('Сумма операции с округлением'))
+            list_sum.append(transaction.get("Сумма операции с округлением"))
 
     res_sum = sum(list_sum)
     rounded_sum = round(res_sum)
 
     # Подготовка данных для возврата в формате JSON
-    result = {
-        "Номер карты": user_input,
-        "Сумма операций": rounded_sum
-    }
+    result = {"Номер карты": user_input, "Сумма операций": rounded_sum}
 
     logging.info(f"Подсчет завершен. Общая сумма: {rounded_sum}")
     return json.dumps(result, ensure_ascii=False)
