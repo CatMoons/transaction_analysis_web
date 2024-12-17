@@ -1,13 +1,15 @@
-import os
-import requests
-from dotenv import load_dotenv
 import json
-from datetime import datetime
-import pandas as pd
 import logging
-from src.utils import transactions_xlsx
-from dateutil.relativedelta import relativedelta
+import os
+from datetime import datetime
+
+import pandas as pd
+import requests
 from alpha_vantage.timeseries import TimeSeries
+from dateutil.relativedelta import relativedelta
+from dotenv import load_dotenv
+
+from src.utils import transactions_xlsx
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -18,10 +20,11 @@ load_dotenv("E:/pycharm_project/transaction_analysis_web/.env")
 EXCHANGE_RATE_API_KEY = os.getenv("EXCHANGE_RATE_API_KEY")
 ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
 
+
 def load_user_settings():
-    '''Загружает настройки пользователя из файла user_settings.json'''
+    """Загружает настройки пользователя из файла user_settings.json"""
     try:
-        with open('E:/pycharm_project/transaction_analysis_web/src/user_settings.json', 'r') as file:
+        with open("E:/pycharm_project/transaction_analysis_web/src/user_settings.json", "r") as file:
             return json.load(file)
     except FileNotFoundError:
         logging.error("Файл user_settings.json не найден")
@@ -30,11 +33,12 @@ def load_user_settings():
         logging.error("Ошибка декодирования JSON")
         return None
 
+
 def get_exchange_rate():
-    '''
+    """
     Запрашивает текущий курс валют с использованием API
     :return: Словарь с курсами валют для пользовательских валют или None в случае ошибки
-    '''
+    """
     logging.debug("Запрос курса валют")
 
     # Загрузить настройки пользователя
@@ -55,7 +59,11 @@ def get_exchange_rate():
         data = response.json()
 
         # Выборка только нужных валют
-        filtered_rates = {currency: data['conversion_rates'].get(currency) for currency in user_currencies if currency in data['conversion_rates']}
+        filtered_rates = {
+            currency: data["conversion_rates"].get(currency)
+            for currency in user_currencies
+            if currency in data["conversion_rates"]
+        }
 
         if len(filtered_rates) != len(user_currencies):
             missing_currencies = set(user_currencies) - filtered_rates.keys()
@@ -65,6 +73,7 @@ def get_exchange_rate():
     else:
         logging.error(f"Не удалось получить курс валют, статус: {response.status_code}")
         return None
+
 
 def get_stock_price(symbol):
     """
@@ -85,13 +94,13 @@ def get_stock_price(symbol):
         logging.error("Необходимо указать API ключ в .env файле.")
         raise ValueError("Необходимо указать API ключ в .env файле.")
 
-    ts = TimeSeries(key=ALPHA_VANTAGE_API_KEY, output_format='json')
+    ts = TimeSeries(key=ALPHA_VANTAGE_API_KEY, output_format="json")
     logging.info(f"Запрос цены акции для символа: {symbol}")
 
     try:
         # Получение текущей цены акции
         data, _ = ts.get_quote_endpoint(symbol=symbol)
-        price = data['05. price']
+        price = data["05. price"]
         logging.info(f"Успешно получена цена акции для {symbol}: {price}")
     except Exception as e:
         logging.error(f"Ошибка при получении данных для {symbol}: {e}")
@@ -99,19 +108,21 @@ def get_stock_price(symbol):
 
     return float(price)
 
+
 def fetch_currency_rates():
-    '''
+    """
     Функция-оболочка для получения курса валют.
     :return:
-    '''
+    """
     return get_exchange_rate()
 
-# def fetch_stock_prices():
-#     '''
-#     Функция-оболочка для получения цен на акции.
-#     :return:
-#     '''
-#     return get_stock_prices()
+
+def fetch_stock_prices():
+    '''
+    Функция-оболочка для получения цен на акции.
+    :return:
+    '''
+    return get_stock_prices()
 
 
 def get_greeting(hour):
@@ -163,12 +174,12 @@ def process_excel_data(excel_file_path, specific_date):
         logging.info(f"Дата окончания отчетного периода: {end_date}")
 
         # Фильтрация данных по дате операции от заданной до конца месяца
-        df['Дата операции'] = pd.to_datetime(df['Дата операции'], dayfirst=True)
-        filtered_df = df[(df['Дата операции'] >= start_date) & (df['Дата операции'] <= end_date)]
+        df["Дата операции"] = pd.to_datetime(df["Дата операции"], dayfirst=True)
+        filtered_df = df[(df["Дата операции"] >= start_date) & (df["Дата операции"] <= end_date)]
         logging.info(f"Данные отфильтрованы. Количество записей: {len(filtered_df)}")
 
         # Преобразование отфильтрованных данных в JSON формат
-        result_json = filtered_df.to_json(orient='records', date_format='iso', force_ascii=False)
+        result_json = filtered_df.to_json(orient="records", date_format="iso", force_ascii=False)
         logging.info("Данные конвертированы в JSON формат.")
 
         return result_json
@@ -176,5 +187,3 @@ def process_excel_data(excel_file_path, specific_date):
     except Exception as e:
         logging.error(f"Произошла ошибка при обработке файла: {e}")
         raise
-
-# пришлось закоментить ибо кончилось количество использований ссылок, а акции и вовсе не нашел
