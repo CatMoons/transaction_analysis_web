@@ -1,9 +1,11 @@
-import pandas as pd
-import re
 import json
 import logging
+import re
+
+import pandas as pd
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
 
 def analyze_cashback(data, year, month):
     """
@@ -47,7 +49,6 @@ def analyze_cashback(data, year, month):
 
     logging.info("Анализ завершён успешно")
     return cashback_json
-
 
 
 def extract_phone_numbers(description):
