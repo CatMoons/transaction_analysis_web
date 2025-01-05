@@ -4,7 +4,6 @@ import re
 from datetime import datetime
 from fileinput import filename
 from re import search
-
 import pandas as pd
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
