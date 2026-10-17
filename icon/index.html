@@ -46,7 +46,7 @@
     transform-origin: var(--cx) var(--cy);
     transition: transform .42s cubic-bezier(.34, 1.56, .64, 1), filter .42s ease;
   }
-  .ring, .ring-glow { transform-origin: var(--cx) var(--cy); }
+  .ring, .ring-rest, .ring-glow { transform-origin: var(--cx) var(--cy); }
   .glow { mix-blend-mode: screen; opacity: 0; }
   .shade {
     background: radial-gradient(circle at var(--cx) var(--cy),
@@ -91,6 +91,7 @@
   <img src="assets/frame.webp" alt="">
   <div class="layer disc">
     <img class="ring" src="assets/ring.webp" alt="">
+    <img class="ring-rest" src="assets/ring-rest.webp" alt="">
     <img class="ring-glow glow" src="assets/ring-glow.webp" alt="">
     <img class="core" src="assets/core.webp" alt="">
     <img class="core-glow glow" src="assets/core-glow.webp" alt="">
@@ -102,7 +103,8 @@
 
 <script>
   document.querySelectorAll('.rune-icon').forEach((icon) => {
-    const rotating = icon.querySelectorAll('.ring, .ring-glow');
+    const rotating = icon.querySelectorAll('.ring, .ring-rest, .ring-glow');
+    const ringRest = icon.querySelector('.ring-rest');
     const ringGlow = icon.querySelector('.ring-glow');
     const coreGlow = icon.querySelector('.core-glow');
     const wave = icon.querySelector('.wave');
@@ -131,6 +133,11 @@
           { duration: 1100, easing: 'cubic-bezier(.15, .75, .25, 1)' }
         ));
         spins[0].onfinish = () => { spins = []; };
+        // оригинальный кусок кольца у свитка совпадает с картинкой только в покое
+        ringRest.animate(
+          [{ opacity: 1 }, { opacity: 0, offset: .06 }, { opacity: 0, offset: .8 }, { opacity: 1 }],
+          { duration: 1100 }
+        );
 
         wave.animate(
           [{ scale: 0.35, opacity: 1 }, { scale: 1.05, opacity: 0 }],
